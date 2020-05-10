@@ -1,0 +1,6 @@
+ext {
+    typesafeVersion = "1.2.1"
+    circeConfig = "0.4.0"
+    circe = "0.9.3"
+
+}
