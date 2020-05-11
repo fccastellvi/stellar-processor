@@ -28,7 +28,7 @@ object Config {
     typesafeConfig
   }
 
-  val config = getConfig
-  val stellarUrl = config.stellar.url
+  val config: Config = getConfig
+  val stellarUrl: String = config.stellar.url
 
 }
