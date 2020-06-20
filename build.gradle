@@ -51,4 +51,5 @@ dependencies {
     compile("io.circe:circe-parser_$scalaVersion:$circe")
     compile("org.http4s:http4s-dsl_$scalaVersion:$http4s")
     compile("org.http4s:http4s-blaze-client_$scalaVersion:$http4s")
+    compile("org.http4s:http4s-circe_$scalaVersion:$http4s")
 }
