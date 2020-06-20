@@ -1,4 +1,4 @@
-package com.facc.projects.model
+package com.facc.projects.stellar.model
 
 import com.typesafe.config.ConfigFactory
 import io.circe.config.syntax._

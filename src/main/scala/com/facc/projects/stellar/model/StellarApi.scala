@@ -1,4 +1,4 @@
-package com.facc.projects.model
+package com.facc.projects.stellar.model
 
 case class Payment(paging_token: String,
                    transaction_successful: Boolean,
@@ -13,5 +13,5 @@ case class Payment(paging_token: String,
 
 case class Records(records: List[Payment])
 
-case class StellarPaymentResponse(_embedded: Records)
+case class PaymentResponse(_embedded: Records)
 
