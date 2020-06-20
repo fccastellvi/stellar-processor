@@ -6,8 +6,8 @@ import org.http4s.client.Client
 
 case class StellarRpc(client: Client[IO]) {
 
-  def getPaymentsPerLedger(ledgerId: Long): List[Payment]
+  def getPaymentsPerLedger(ledgerId: Long): List[Payment] = ???
 
-  def getStreamFrom(ledgerId: Long): List[Payment]
+  def getStreamFrom(ledgerId: Long): List[Payment] = ???
 
 }
