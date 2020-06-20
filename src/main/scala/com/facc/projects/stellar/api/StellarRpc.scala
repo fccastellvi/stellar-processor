@@ -4,10 +4,16 @@ import cats.effect.IO
 import com.facc.projects.stellar.model.Payment
 import org.http4s.client.Client
 
-case class StellarRpc(client: Client[IO]) {
 
-  def getPaymentsPerLedger(ledgerId: Long): List[Payment] = ???
+trait BlockchainRpc {
+  def getPaymentsPerLedger(blockNum: Long): List[Payment]
+  def getStreamFrom(blockNum: Long): List[Payment]
+}
 
-  def getStreamFrom(ledgerId: Long): List[Payment] = ???
+case class StellarRpc(client: Client[IO]) extends BlockchainRpc {
+
+  def getPaymentsPerLedger(blockNum: Long): List[Payment] = ???
+
+  def getStreamFrom(blockNum: Long): List[Payment] = ???
 
 }
