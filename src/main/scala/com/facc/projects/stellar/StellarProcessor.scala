@@ -6,10 +6,6 @@ import com.facc.projects.stellar.rpc.StellarRpc
 
 object StellarProcessor extends App {
 
-  import scala.concurrent.ExecutionContext.global
-  implicit val cs: ContextShift[IO] = IO.contextShift(global)
-  implicit val timer: Timer[IO] = IO.timer(global)
-
   val startBlock = 696962
 
   val stellarResponse = withIOClient.use{client =>
