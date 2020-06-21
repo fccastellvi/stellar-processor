@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         jcenter()
@@ -49,7 +48,13 @@ dependencies {
     compile("io.circe:circe-config_$scalaVersion:${circeConfig}")
     compile("io.circe:circe-generic_$scalaVersion:$circe")
     compile("io.circe:circe-parser_$scalaVersion:$circe")
+    compile("io.circe:circe-literal_$scalaVersion:$circe")
     compile("org.http4s:http4s-dsl_$scalaVersion:$http4s")
     compile("org.http4s:http4s-blaze-client_$scalaVersion:$http4s")
     compile("org.http4s:http4s-circe_$scalaVersion:$http4s")
+    compile("org.apache.spark:spark-sql-kafka-0-10_$scalaVersion:$spark")
+    compile("org.apache.kafka:kafka_$scalaVersion:$kafka")
+    compile("org.json4s:json4s-core_$scalaVersion:$json4s")
+    compile("org.json4s:json4s-jackson_$scalaVersion:$json4s")
+
 }

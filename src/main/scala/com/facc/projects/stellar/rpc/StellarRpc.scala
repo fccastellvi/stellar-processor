@@ -40,6 +40,5 @@ case class StellarRpc(client: Client[IO]) extends BlockchainRpc {
       .evalMap(getVTEPerBlock)
       .flatMap(fs2.Stream.emits(_))
       .buffer(5)
-
   }
 }

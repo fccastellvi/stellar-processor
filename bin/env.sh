@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-export KAFKA_HOME="$HOME/repos/PET/stellar-processor/kafka/confluent-5.5.0/"
+ROOT_DIR=$(git rev-parse --show-toplevel)
+export KAFKA_HOME="$ROOT_DIR/kafka/confluent-5.5.0/"

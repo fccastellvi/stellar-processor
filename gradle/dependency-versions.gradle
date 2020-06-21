@@ -3,5 +3,7 @@ ext {
     circeConfig = "0.4.0"
     circe = "0.9.3"
     http4s = "0.20.0-M6"
-
+    spark = "2.4.4"
+    kafka = "2.2.0"
+    json4s = "3.5.3"
 }

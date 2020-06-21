@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-source ../env.sh
+ROOT_DIR=$(git rev-parse --show-toplevel)
+source ${ROOT_DIR}/bin/env.sh
 
 # Create the input topic
 $KAFKA_HOME/bin/kafka-topics --create \
