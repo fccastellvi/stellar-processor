@@ -12,12 +12,24 @@ import org.http4s.client.Client
 
 case class StellarRpc(client: Client[IO]) extends BlockchainRpc {
 
+  /**
+   *
+   * @param blockNum Block number or ledger id to get the payments from
+   * @return
+   */
   def getVTEPerBlock(blockNum: Long): IO[List[Payment]] =
     client
       .expect[PaymentResponse](baseUrl.withPath(s"/ledgers/$blockNum/payments"))(jsonOf[IO, PaymentResponse])
       .map(_._embedded.records)
       .handleErrorWith{case _:DecodingFailures | _:InvalidMessageBodyFailure=> IO(List.empty[Payment])}
 
+  /**
+   * Note: All the decoding exceptions caught in getVTEPerBlock will return an empty list which
+   * will be handled when emitting the stream `Stream.emits`
+   * @param blockNum Start block number to iterate over
+   * @return An infinite stream containing all the payments from the specified blockNum onwards
+   *
+   */
   def getStreamFrom(blockNum: Long): Stream[IO, Chunk[Payment]] = {
     fs2.Stream
       .fromIterator[IO, Long](Iterator.iterate(blockNum)(_ + 1))
