@@ -3,6 +3,7 @@ package com.facc.projects.stellar.model
 import com.typesafe.config.ConfigFactory
 import io.circe.config.syntax._
 import io.circe.generic.auto._
+import org.http4s.Uri
 
 import scala.util.{Failure, Success, Try}
 
@@ -30,5 +31,6 @@ object Config {
 
   val config: Config = getConfig
   val stellarUrl: String = config.stellar.url
+  val baseUrl = Uri.fromString(stellarUrl).right.getOrElse(throw new Exception("Wrong url. Correct it"))
 
 }

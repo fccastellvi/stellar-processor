@@ -19,11 +19,8 @@ import com.facc.projects.stellar.model.AuthResponse
 
 object RestScalaClient {
 
-  val defaultDuration = FiniteDuration(2, TimeUnit.SECONDS)
+  val defaultDuration: FiniteDuration = FiniteDuration(2, TimeUnit.SECONDS)
   implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
-
-  val defaultIdleTimeout = FiniteDuration(10, TimeUnit.SECONDS)
-
   implicit val cs: ContextShift[IO] = IO.contextShift(global)
 
   def withIOClient: Resource[IO, Client[IO]] = {
