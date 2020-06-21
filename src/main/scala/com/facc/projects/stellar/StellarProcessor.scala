@@ -12,8 +12,6 @@ object StellarProcessor extends App {
 
   val startBlock = 696962
 
-  println(s"Getting payments for block $startBlock")
-
   val stellarResponse = withIOClient.use{client =>
     val stellarRpc = StellarRpc(client)
    stellarRpc
