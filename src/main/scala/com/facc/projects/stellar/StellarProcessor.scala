@@ -6,7 +6,10 @@ import com.facc.projects.stellar.rpc.StellarRpc
 
 object StellarProcessor extends App {
 
-  val startBlock = 696962
+  //696962
+  val startBlock = System.getenv("START_HEIGHT").toLong
+
+  println(s"Start height of: $startBlock")
 
   val stellarResponse = withIOHttpClient.use { client =>
     val stellarRpc = StellarRpc(client)
