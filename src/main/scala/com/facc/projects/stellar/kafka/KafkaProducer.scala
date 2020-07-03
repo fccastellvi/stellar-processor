@@ -33,7 +33,7 @@ object KafkaProducer {
     producer.close()
   }
 
-  def writeToKafkaWrapper(vte: VTE): IO[Unit] = {
+  def writeVteToKafka(vte: VTE): IO[Unit] = {
     println(s"Writing vte with hash ${vte.transaction_hash} to kafka")
     IO(writeToKafka(stellarTxTopic, vte.transaction_hash, vte))
   }

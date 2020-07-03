@@ -23,7 +23,7 @@ object RestScalaClient {
   implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
   implicit val cs: ContextShift[IO] = IO.contextShift(global)
 
-  def withIOClient: Resource[IO, Client[IO]] = {
+  def withIOHttpClient: Resource[IO, Client[IO]] = {
     BlazeClientBuilder[IO](scala.concurrent.ExecutionContext.global)
       .withResponseHeaderTimeout(15 seconds)
       .withRequestTimeout(15 seconds)

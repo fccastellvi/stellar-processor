@@ -8,11 +8,11 @@ object StellarProcessor extends App {
 
   val startBlock = 696962
 
-  val stellarResponse = withIOClient.use { client =>
+  val stellarResponse = withIOHttpClient.use { client =>
     val stellarRpc = StellarRpc(client)
     stellarRpc
       .getStreamFrom(startBlock)
-      .evalMap(writeToKafkaWrapper)
+      .evalMap(writeVteToKafka)
       .compile
       .toVector
   }.unsafeRunSync()

@@ -13,7 +13,7 @@ nohup $KAFKA_HOME/bin/zookeeper-server-start -daemon $KAFKA_HOME/etc/kafka/zooke
 sleep 5
 
 # Start Kafka.  Run this command in its own terminal
-nohup $KAFKA_HOME/bin/kafka-server-start -daemon $KAFKA_HOME/etc/kafka/server.properties > $KAFKA_HOME/logs/kafka_nohup.log &
+nohup ${KAFKA_HOME}/bin/kafka-server-start -daemon $KAFKA_HOME/etc/kafka/server.properties > $KAFKA_HOME/logs/kafka_nohup.log &
 
 #Creating stellar-transactions topic
-sh ${ROOT_DIR}/bin/createTopic.sh
+sh $ROOT_DIR/bin/kafka/createTopic.sh

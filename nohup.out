@@ -1,0 +1,2 @@
+sh: /Users/ferran.cabezas/repos/PET/stellar-processor/bin/createTopic.sh: No such file or directory
+sh: /Users/ferran.cabezas/repos/PET/stellar-processor/kafka/confluent-5.5.0//bin/createTopic.sh: No such file or directory
