@@ -9,7 +9,9 @@ import scala.collection.JavaConverters._
 
 object KafkaConsumer {
   def main(args: Array[String]): Unit = {
-    consumeFromKafka("stellar-transactions")
+    val topic = System.getenv("TOPIC")
+    consumeFromKafka(topic)
+//    consumeFromKafka("stellar-transactions")
   }
 
   def consumeFromKafka(topic: String) = {

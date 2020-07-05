@@ -1,0 +1,6 @@
+version: '3'
+services:
+  producer:
+    image: 'kafka-stellar-producer:latest'
+    environment:
+      - START_HEIGHT=696962
