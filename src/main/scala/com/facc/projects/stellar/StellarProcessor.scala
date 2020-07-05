@@ -2,7 +2,8 @@ package com.facc.projects.stellar
 
 import cats.effect.IO
 import com.facc.projects.stellar.http.RestScalaClient._
-import com.facc.projects.stellar.kafka.KafkaProducer._
+import com.facc.projects.stellar.kafka.KafkaStellarProducer
+import com.facc.projects.stellar.kafka.KafkaStellarProducer._
 import com.facc.projects.stellar.rpc.StellarRpc
 
 object StellarProcessor extends App {
@@ -12,14 +13,18 @@ object StellarProcessor extends App {
 
   println(s"Start height of: $startBlock")
 
+  val kafkaProducerClient = getKafkaClient
+
   val stellarResponse = withIOHttpClient.use { client =>
     val stellarRpc = StellarRpc(client)
     stellarRpc
       .getStreamFrom(startBlock)
-      .evalMap(writeVteToKafka)
+      .evalMap(vte => KafkaStellarProducer(kafkaProducerClient).writeToKafka("stellar-transactions", vte.transaction_hash, vte))
       .compile
       .toVector
-  }.handleErrorWith{
-    case e:Exception => IO(println(s"Failed to write to Kafka: ${e.getMessage}"))
+  }.handleErrorWith {
+    case e: Exception => IO(println(s"Failed to write to Kafka: ${e.getMessage}"))
   }.unsafeRunSync()
+
+  kafkaProducerClient.close()
 }
