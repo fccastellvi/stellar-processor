@@ -1,6 +1,15 @@
 version: '3'
 services:
-  producer:
-    image: 'kafka-stellar-producer:latest'
+#  producer:
+#    image: 'stellar-processor:latest'
+#    environment:
+#      - START_HEIGHT=696962
+#      - TOPIC=stellar-transactions
+#    entrypoint: ["java", "-cp", "/app/stellar-processor_2.11-1.0-SNAPSHOT.jar", "com.facc.projects.stellar.kafka.KafkaStellarProducer"]
+
+  consumer:
+    image: 'stellar-processor:latest'
     environment:
       - START_HEIGHT=696962
+      - TOPIC=stellar-transactions
+    entrypoint: ["java", "-cp", "/app/stellar-processor_2.11-1.0-SNAPSHOT.jar", "com.facc.projects.stellar.kafka.KafkaStellarConsumer"]
