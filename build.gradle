@@ -33,11 +33,11 @@ shadowJar {
     version = "$version"
     mergeServiceFiles()
 
-    manifest {
-        attributes(
-                'Main-Class': 'com.facc.projects.stellar.StellarProcessor'
-        )
-    }
+//    manifest {
+//        attributes(
+//                'Main-Class': 'com.facc.projects.stellar.StellarProcessor'
+//        )
+//    }
 }
 
 dependencies {

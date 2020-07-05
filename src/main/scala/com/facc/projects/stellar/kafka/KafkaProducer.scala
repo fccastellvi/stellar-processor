@@ -5,8 +5,10 @@ import java.util.Properties
 import cats.effect.IO
 import com.facc.projects.stellar.model.Config.stellarTxTopic
 import com.facc.projects.stellar.model.VTE
-import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
+import org.apache.kafka.clients.producer.{Callback, KafkaProducer, ProducerRecord, RecordMetadata}
 import org.json4s.{DefaultFormats, jackson}
+
+import scala.collection.JavaConverters._
 
 object KafkaProducer {
   def main(args: Array[String]): Unit = {
@@ -29,12 +31,20 @@ object KafkaProducer {
     val jsonMessage = serialization.write[T](message)
     val record = new ProducerRecord[String, String](topic, key, jsonMessage)
 
-    producer.send(record)
+    producer.send(record, new Callback() {
+      def onCompletion(metadata: RecordMetadata, e: Exception) {
+        if (e != null) {
+          e.printStackTrace();
+        } else {
+          println(s"The offset of the record we just sent is: ${metadata.offset} with json message: ${jsonMessage}")
+        }
+      }
+    }
+    )
     producer.close()
   }
 
   def writeVteToKafka(vte: VTE): IO[Unit] = {
-    println(s"Writing vte with hash ${vte.transaction_hash} to kafka")
     IO(writeToKafka(stellarTxTopic, vte.transaction_hash, vte))
   }
 
