@@ -10,10 +10,11 @@ object StellarProcessor extends App {
 
   //696962
   val startBlock = sys.env.getOrElse("START_HEIGHT", throw new Exception("Please define START_HEIGHT env variable")).toLong
+  val topic = sys.env.getOrElse("TOPIC", throw new Exception("Please define TOPIC env variable"))
 
-  println(s"Start height of: $startBlock")
+  println(s"Putting records into topic $topic with a start height of: $startBlock")
 
-  val kafkaProducerClient = getKafkaClient
+  val kafkaProducerClient = getKafkaProducerClient
 
   val stellarResponse = withIOHttpClient.use { client =>
     val stellarRpc = StellarRpc(client)
