@@ -6,5 +6,5 @@ RUN gradle shadowJar
 FROM openjdk:8
 RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/stellar-processor_2.11-1.0-SNAPSHOT.jar /app/stellar-processor_2.11-1.0-SNAPSHOT.jar
-#EXPOSE 443
+EXPOSE 443 9092
 ENTRYPOINT ["java", "-cp", "/app/stellar-processor_2.11-1.0-SNAPSHOT.jar", "com.facc.projects.stellar.kafka.KafkaStellarProducer"]
