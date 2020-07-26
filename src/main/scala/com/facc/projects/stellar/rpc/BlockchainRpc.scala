@@ -1,10 +1,10 @@
 package com.facc.projects.stellar.rpc
 
-import cats.effect.IO
-import com.facc.projects.stellar.model.VTE
-import fs2.{Chunk, Stream}
+import fs2.Stream
+import org.http4s.client.Client
 
-trait BlockchainRpc {
-  def getVTEPerBlock(blockNum: Long): IO[List[VTE]]
-  def getStreamFrom(blockNum: Long): Stream[IO, VTE]
+trait BlockchainRpc[F[_], VTE] {
+  val client: Client[F]
+  def getVTEPerBlock(blockNum: Long): F[List[VTE]]
+  def getStreamFrom(blockNum: Long): Stream[F, VTE]
 }
