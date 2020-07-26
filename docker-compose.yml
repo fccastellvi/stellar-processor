@@ -5,10 +5,12 @@ services:
     environment:
       - START_HEIGHT=696962
       - TOPIC=stellar-transactions
+      - KAFKA_HOST=host.docker.internal # Assuming we are running kafka in our local machine
     entrypoint: ["java", "-cp", "/app/stellar-processor_2.11-1.0-SNAPSHOT.jar", "com.facc.projects.stellar.kafka.KafkaStellarProducer"]
 
   consumer:
     image: 'stellar-processor:latest'
     environment:
       - TOPIC=stellar-transactions
+      - KAFKA_HOST=host.docker.internal # Assuming we are running kafka in our local machine
     entrypoint: ["java", "-cp", "/app/stellar-processor_2.11-1.0-SNAPSHOT.jar", "com.facc.projects.stellar.kafka.KafkaStellarConsumer"]
