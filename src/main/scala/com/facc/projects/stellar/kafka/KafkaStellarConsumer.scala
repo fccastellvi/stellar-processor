@@ -6,6 +6,7 @@ import java.util
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import java.util.Properties
 import scala.collection.JavaConverters._
+import com.facc.projects.stellar.model.Config.kafkaHost
 
 case class KafkaStellarConsumer(kafkaConsumer: KafkaConsumer[String, String]) {
   def consumeFromKafka(topic: String): Unit = {
@@ -21,7 +22,7 @@ object KafkaStellarConsumer {
 
   def getKafkaConsumerClient: KafkaConsumer[String, String] = {
     val props = new Properties()
-    props.put("bootstrap.servers", "localhost:9092")
+    props.put("bootstrap.servers", s"$kafkaHost:9092")
     props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
     props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
     props.put("auto.offset.reset", "earliest")

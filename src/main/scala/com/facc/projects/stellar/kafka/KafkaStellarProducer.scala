@@ -7,6 +7,7 @@ import com.facc.projects.stellar.http.RestScalaClient.withIOHttpClient
 import com.facc.projects.stellar.rpc.StellarRpc
 import org.apache.kafka.clients.producer.{Callback, KafkaProducer, ProducerRecord, RecordMetadata}
 import org.json4s.{DefaultFormats, jackson}
+import com.facc.projects.stellar.model.Config.kafkaHost
 
 case class KafkaStellarProducer(kafkaProducer: KafkaProducer[String, String]) {
 
@@ -34,7 +35,7 @@ object KafkaStellarProducer {
 
   def getKafkaProducerClient: KafkaProducer[String, String] = {
     val props = new Properties()
-    props.put("bootstrap.servers", "localhost:9092")
+    props.put("bootstrap.servers", s"$kafkaHost:9092")
     props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
     props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
     new KafkaProducer[String, String](props)

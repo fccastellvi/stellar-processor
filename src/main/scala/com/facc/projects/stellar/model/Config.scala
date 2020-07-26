@@ -11,7 +11,7 @@ case class Config(kafka: KafkaConfig, stellar: StellarConfig)
 
 case class StellarConfig(url: String)
 
-case class KafkaConfig(stellarTxTopic: String)
+case class KafkaConfig(stellarTxTopic: String, host: String)
 
 
 object Config {
@@ -32,6 +32,7 @@ object Config {
   val config: Config = getConfig
   val stellarUrl: String = config.stellar.url
   val stellarTxTopic: String = config.kafka.stellarTxTopic
+  lazy val kafkaHost: String = config.kafka.host
 
   val baseUrl: Uri = Uri.fromString(stellarUrl).right.getOrElse(throw new Exception("Wrong url. Correct it"))
 
