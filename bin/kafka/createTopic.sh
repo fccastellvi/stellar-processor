@@ -10,4 +10,11 @@ $KAFKA_HOME/bin/kafka-topics --create \
       --partitions 1 \
       --topic stellar-transactions
 
+# Create the input topic
+$KAFKA_HOME/bin/kafka-topics --create \
+      --bootstrap-server localhost:9092 \
+      --replication-factor 1 \
+      --partitions 1 \
+      --topic stellar-aggregations
+
 $KAFKA_HOME/bin/kafka-topics --list --bootstrap-server localhost:9092
