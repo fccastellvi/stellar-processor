@@ -16,16 +16,20 @@ case class KafkaConfig(stellarTxTopic: String)
 
 object Config {
   def getConfig: Config = {
-    val typesafeConfig = Try {
+    val typesafeConfig =
       ConfigFactory
         .load
         .getConfig("config")
         .as[Config]
-        .right.get
-    } match {
-      case Success(value) => value
-      case Failure(exception) => throw new Exception(s"Failed parsing config: ${exception.getMessage}")
-    }
+        .fold(
+          error => throw new Exception(s"Failed parsing config: ${error.getMessage}"),
+          x => x
+        )
+
+//    } match {
+//      case Success(value) => value
+//      case Failure(exception) => throw new Exception(s"Failed parsing config: ${exception.getMessage}")
+//    }
     typesafeConfig
   }
 
