@@ -1,6 +1,6 @@
 ---
 apiVersion: helm.fluxcd.io/v1
-kind: c
+kind: HelmRelease
 metadata:
   name: redis
 spec:
