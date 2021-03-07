@@ -3,6 +3,7 @@ apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: kafka
+#  namespace: stellar
 spec:
   releaseName: kafka
   helmVersion: v3

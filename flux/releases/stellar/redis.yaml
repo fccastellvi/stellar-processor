@@ -3,6 +3,7 @@ apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: redis
+#  namespace: stellar
 spec:
   releaseName: redis
   helmVersion: v3
@@ -18,7 +19,6 @@ spec:
       extraFlags:
         - "--maxmemory 2gb"
         - "--maxmemory-policy allkeys-lfu"
-
       resources:
         requests:
           memory: 1Gi

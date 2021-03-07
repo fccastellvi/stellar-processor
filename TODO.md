@@ -9,6 +9,17 @@
 - Try flink
  
  
- ```
- fluxctl install --manifest-generation=true --git-user=fccastellvi --git-email=fcab65@gmail.com --git-url=git@github.com:fccastellvi/stellar-processor.git --git-branch master --git-path=flux/releases/kafka --namespace=flux | kubectl apply -f -
+ 
+```
+1- kubectl create ns flux
+``` 
+
+```
+2- fluxctl install --manifest-generation=true --git-user=fccastellvi --git-email=fcab65@gmail.com --git-url=git@github.com:fccastellvi/stellar-processor.git --git-branch master --git-path=flux/releases/kafka --namespace=flux | kubectl apply -f -
+```
+```
+3- helm repo add fluxcd https://charts.fluxcd.io
+```
+```
+4- Add deploy keys to github (fluxctl identity --k8s-fwd-ns flux)
 ```
