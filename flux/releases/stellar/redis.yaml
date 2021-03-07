@@ -3,7 +3,7 @@ apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: redis
-#  namespace: stellar
+  namespace: stellar
 spec:
   releaseName: redis
   helmVersion: v3
