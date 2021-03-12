@@ -14,18 +14,16 @@ spec:
   values:
     usePassword: false
     cluster:
-      slaveCount: 1
+      slaveCount: 0
     master:
       extraFlags:
-        - "--maxmemory 2gb"
         - "--maxmemory-policy allkeys-lfu"
       resources:
         requests:
-          memory: 1Gi
-          cpu: "1"
-
+          memory: 0.1Gi
+          cpu: "0.1"
     slave:
       resources:
         requests:
-          memory: 1Gi
-          cpu: "1"
+          memory: 0.1Gi
+          cpu: "0.1"
