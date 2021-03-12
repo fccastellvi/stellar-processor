@@ -20,10 +20,10 @@ spec:
         - "--maxmemory-policy allkeys-lfu"
       resources:
         requests:
-          memory: 0.1Gi
-          cpu: "0.1"
+         memory: 256Mi
+         cpu: 100m
     slave:
       resources:
         requests:
-          memory: 0.1Gi
-          cpu: "0.1"
+         memory: 256Mi
+         cpu: 100m
