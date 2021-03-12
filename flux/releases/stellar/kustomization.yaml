@@ -6,4 +6,4 @@ commonAnnotations:
 resources:
   - namespace.yaml
   - redis.yaml
-#  - kafka.yaml
+  - kafka.yaml
