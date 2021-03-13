@@ -59,4 +59,3 @@
 184 - kdp redis-slave
 185 - fgacp "Trying new config"
 186 - kdp redis-slave
-191 - kdp redis-slave-0
