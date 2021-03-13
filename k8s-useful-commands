@@ -1,0 +1,62 @@
+6 - helm repo add fluxcd https://charts.fluxcd.io
+7 - kubectl apply -f flux/releases/stellar/redis.yaml
+8 - helm upgrade -i helm-operator fluxcd/helm-operator \\n    --namespace flux \\n    --set helm.versions=v3
+9 - kubectl apply -f flux/releases/stellar/redis.yaml
+43 - kubectl get deployments --all-namespaces
+44 - kubectl get deployments stellar
+45 - kubectl get jobs
+46 - kgp
+111 - kn flux
+113 - kdp helm-operator-7c85b7d7d-qjrxz
+114 - kg secret
+115 - kg config map
+116 - kcuc crypteng-prod
+117 - kng
+118 - kn flux
+119 - kgp
+120 - kg secret
+121 - kcuc minikube
+122 - kg secrets
+123 - kg hr
+124 - kgp
+125 - kdp helm-operator-7c85b7d7d-qjrxz
+126 - kg secret
+127 - kg secret flux-git-deploy -o yaml
+128 - pw
+129 - pwd
+130 - vim test.yaml
+131 - kubect apply -f test.yaml
+132 - kubectl apply -f test.yaml
+133 - kgp
+134 - kdelete  pod helm-operator-7c85b7d7d-qjrxz
+135 - k delete  pod helm-operator-7c85b7d7d-qjrxz
+136 - kp
+137 - kg deployment
+140 - kg replicaset
+144 - kn stellar
+145 - kgp
+149 - kn flux
+150 - kp
+151 - kgp
+152 - kl flux-5b5dd868f-7v575 | tail -n 100
+153 - kn stellar
+154 - kg hr
+156 - kg deployment
+157 - kg statefulset
+158 - kgcm
+161 - kg cm redis-health -o yaml
+168 - kd statefulset redis-master
+170 - kg hr
+172 - k delete hr redis
+173 - kd statefulset redis-master
+176 - kg servicemonitor
+177 - kg statefulset
+179 - kdp redis-slave-0
+180 - fgacp "Trying new config"
+181 - kgp
+182 - kg hr
+183 - kg statefulset
+184 - kdp redis-slave
+185 - fgacp "Trying new config"
+186 - kdp redis-slave
+191 - kdp redis-slave-0
