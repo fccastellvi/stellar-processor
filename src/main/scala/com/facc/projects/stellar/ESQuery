@@ -1,0 +1,151 @@
+
+import cats.implicits.{catsStdInstancesForOption, catsSyntaxApplicativeId}
+import com.amazonaws.auth.AWSCredentialsProvider
+import com.sksamuel.elastic4s.ElasticApi.{search, searchScroll}
+import com.sksamuel.elastic4s.ElasticDsl.{SearchHandler, SearchScrollHandler}
+import com.sksamuel.elastic4s._
+import com.sksamuel.elastic4s.requests.searches.{SearchHit, SearchResponse}
+import com.sksamuel.exts.concurrent.Futures.{RichFuture, duration}
+import org.apache.log4j.Logger
+import org.apache.spark.sql.{Dataset, SparkSession}
+import org.apache.spark.util.DoubleAccumulator
+import org.elasticsearch.client.RestClient
+
+import scala.collection.immutable
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.FiniteDuration
+import scala.util.Try
+
+case class ElasticSearchQueries(spark: SparkSession, credentials: AWSCredentialsProvider, restClient: RestClient, esClient: ElasticClient) {
+
+  import spark.implicits._
+
+  @transient lazy val log: Logger = org.apache.log4j.LogManager.getLogger(s"ElasticSearchQueries")
+
+  private val analysisTypeMapping: Dataset[AnalysisTypeESMapping] =
+    Seq(
+      AnalysisTypeESMapping("source_of_funds", 1),
+      AnalysisTypeESMapping("address_cluster", 2),
+      AnalysisTypeESMapping("destionation_of_funds", 3),
+      AnalysisTypeESMapping("wallet_exposure", 4)
+    ).toDS
+
+  def getClientNavigatorAnalyses: Dataset[RawNavigatorQuery] = {
+    val index          = "read_navigator_analyses"
+    val includedFields = Seq("hash", "output_address", "analysis_type_id")
+
+    val rawQueryForES                      =
+      """
+        |{
+        |        "bool": {
+        |            "filter": [
+        |                { "term":  { "subject_type": "transaction" } },
+        |                { "term":  { "process_status_id": 2 } },
+        |                { "range":  { "analysed_at": { "gte": "now-1h/d" } } }
+        |            ]
+        |        }
+        |}""".stripMargin
+    val response: Response[SearchResponse] = runESSearchRawQuery(index, rawQueryForES, includedFields)
+    val resp                               = handleNavigatorQueryResponse(response)
+    esClient.close()
+    resp
+  }
+
+  private def runESSearchRawQuery(index: String, rawQuery: String, includedFields: Seq[String]): Response[SearchResponse] = {
+    esClient
+      .execute(
+        search(index).rawQuery(rawQuery).sourceInclude(includedFields).limit(10000).scroll(FiniteDuration(2, "minutes"))
+      )
+      .await
+  }
+
+  private def handleNavigatorQueryResponse(response: Response[SearchResponse]): Dataset[RawNavigatorQuery] = {
+    response match {
+      case results: RequestSuccess[SearchResponse] => handleRequestSuccessForNavigatorQueryResponse(results)
+      case failure: RequestFailure                 => throw new Exception("Failed to query Elasticsearch " + failure.error)
+    }
+  }
+
+  private def handleRequestSuccessForNavigatorQueryResponse(requestSuccess: RequestSuccess[SearchResponse]): Dataset[RawNavigatorQuery] = {
+    val ds = paginateESQuery(requestSuccess)
+    normaliseAnalysisTypeId(analysisTypeMapping, ds)
+  }
+
+  private def normaliseAnalysisTypeId(analysisTypeMapping: Dataset[AnalysisTypeESMapping], rawQueries: Dataset[RawQueryFromES]): Dataset[RawNavigatorQuery] = {
+    rawQueries
+      .join(analysisTypeMapping, Seq("analysis_type_id"))
+      .withColumnRenamed("analysis_type_name", "direction")
+      .asDSWithSchemaOf[RawNavigatorQuery]
+  }
+
+  private def mapSearchHitToRawQueryFromES(searchHit: SearchHit): Option[RawQueryFromES] = {
+    for {
+      tx_hash: String       <- searchHit.sourceAsMap.get("hash").flatMap(anyRefToSafeString)
+      analysis_type_id: Int <- searchHit.sourceAsMap.get("analysis_type_id").flatMap(anyRefToSafeInt)
+      output_address        <- searchHit.sourceAsMap.get("output_address").flatMap(anyRefToSafeString).pure[Option]
+    } yield RawQueryFromES(tx_hash, analysis_type_id, output_address)
+  }
+
+  private def anyRefToSafeString(anyRef: AnyRef): Option[String] = {
+    Try(anyRef.toString).toOption
+  }
+
+  private def anyRefToSafeInt(anyRef: AnyRef): Option[Int] = {
+    Try(anyRef.toString.toInt).toOption
+  }
+
+  private def paginateESQuery(requestSuccess: RequestSuccess[SearchResponse]): Dataset[RawQueryFromES] = {
+    val totalHitsForSearch = requestSuccess.result.totalHits
+    val startScrollId      = requestSuccess.result.scrollId
+    val rawQueryFromES     = getRawQueryDSFromESResponse(requestSuccess)
+    val timeAccumulated    = spark.sparkContext.doubleAccumulator("totalTimeTaken")
+
+    log.warn(s"Total number of items to search in ES: $totalHitsForSearch")
+
+    val ds = recursiveScrollCalls(startScrollId, rawQueryFromES, timeAccumulated, false).toDS().cache
+
+    log.warn(s"Total time taken to query elastic: ${timeAccumulated.value}secs")
+    log.warn(s"Total number of items successfully processed from elastic: ${ds.count}")
+    ds
+  }
+
+  private def recursiveScrollCalls(
+      scrollId: Option[String],
+      baseQuery: Seq[RawQueryFromES],
+      timeAccumulated: DoubleAccumulator,
+      isResponseFromESEmpty: Boolean
+  ): Seq[RawQueryFromES] = {
+    if (isResponseFromESEmpty) {
+      baseQuery
+    } else {
+      val (timeTaken, (unionedDS, nextScrollId, previousQueryCount)) = Timed.returnTimeTaken {
+        val resp                  = searchNewScroll(scrollId.get)
+        val nextScrollId          = resp.result.scrollId
+        val isResponseFromESEmpty = resp.result.hits.isEmpty
+        val newQuery              = getRawQueryDSFromESResponse(resp)
+        val unionedDS             = baseQuery ++ newQuery
+        (unionedDS, nextScrollId, isResponseFromESEmpty)
+      }
+      timeAccumulated.add(timeTaken)
+
+      recursiveScrollCalls(nextScrollId, unionedDS, timeAccumulated, previousQueryCount)
+    }
+  }
+
+  private def searchNewScroll(scrollId: String): Response[SearchResponse] = {
+    esClient.execute {
+      searchScroll(scrollId).keepAlive("1m")
+    }.await
+  }
+
+  private def getRawQueryDSFromESResponse(resp: Response[SearchResponse]): Seq[RawQueryFromES] = {
+    resp.result.hits.hits.toList.flatMap(mapSearchHitToRawQueryFromES)
+  }
+}
+
+object RunES extends App with CommonModule {
+  val spark: SparkSession = Environment.getSparkSession(env)
+  val a                   = ElasticSearchQueries(spark, credentials, restClient, esClient).getClientNavigatorAnalyses
+  a.show(false)
+  a.count
+}
